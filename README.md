@@ -8,6 +8,7 @@ This project is built with **plain HTML, CSS, and JavaScript only** (no framewor
 
 - Retro Nokia-inspired visual style
 - Keyboard controls (arrow keys)
+- Mobile touch controls (on-screen D-pad + swipe gestures on the board)
 - Pause/resume with spacebar
 - Live score tracking
 - Persistent high score with `localStorage`
@@ -67,9 +68,9 @@ To stop the server, press `Ctrl + C` in the terminal.
 - Choose a speed preset from the **Speed** dropdown (optional).
 - Pick a preferred look from the **Theme** dropdown (optional).
 - Pick an **Arena** layout (Open Field, Crossroads Walls, Spiral Maze, Twin Tunnels, Moving Patrols).
-- Press any **Arrow key** to start moving.
-- Use **Arrow keys** to change direction.
-- Press **Space** to pause/resume.
+- Press any **Arrow key** (desktop) or tap any touch direction button (mobile) to start moving.
+- Use **Arrow keys**, touch buttons, or swipe on the game board to change direction.
+- Press **Space** or tap **Pause** to pause/resume.
 - Eat food to increase score.
 - The snake wraps across screen edges (no wall death).
 - Avoid your own body.

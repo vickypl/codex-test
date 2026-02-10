@@ -28,7 +28,7 @@
                     <span class="game-tag">Classic Arcade</span>
                   </div>
                   <p class="subtitle mb-0">
-                    Use arrow keys to move. Press <strong>Space</strong> to pause and resume.
+                    Use arrow keys or touch controls to move. Press <strong>Space</strong> (or touch Pause) to pause and resume.
                   </p>
                 </div>
 
@@ -108,6 +108,14 @@
                   aria-label="Snake game board"
                   role="img"
                 ></canvas>
+
+                <div id="touch-controls" class="touch-controls mt-3" aria-label="Touch controls">
+                  <button type="button" class="touch-btn touch-up" data-direction="ArrowUp" aria-label="Move up">↑</button>
+                  <button type="button" class="touch-btn touch-left" data-direction="ArrowLeft" aria-label="Move left">←</button>
+                  <button type="button" class="touch-btn touch-pause" id="touch-pause" aria-label="Pause game">⏯</button>
+                  <button type="button" class="touch-btn touch-right" data-direction="ArrowRight" aria-label="Move right">→</button>
+                  <button type="button" class="touch-btn touch-down" data-direction="ArrowDown" aria-label="Move down">↓</button>
+                </div>
               </div>
             </section>
           </div>
