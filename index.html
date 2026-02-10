@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nokia Style Snake</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="game-wrap">
+      <h1>Nokia Snake</h1>
+      <p class="subtitle">Use arrow keys to move. Press <strong>Space</strong> to pause and resume.</p>
+      <section class="hud" aria-label="Game information">
+        <p>Score: <span id="score">0</span></p>
+        <p>High Score: <span id="high-score">0</span></p>
+      </section>
+      <canvas id="game" width="400" height="400" aria-label="Snake game board" role="img"></canvas>
+      <button id="restart" type="button">Restart</button>
+      <p id="status" class="status" aria-live="polite">Press an arrow key to begin.</p>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
