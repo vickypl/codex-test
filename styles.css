@@ -26,12 +26,17 @@ body {
 }
 
 .game-card {
-  width: min(94vw, 640px);
+  width: min(96vw, 1000px);
   border-radius: 1.2rem;
   background: var(--card-bg);
   border: 1px solid var(--card-border);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+}
+
+.info-panel {
+  display: flex;
+  flex-direction: column;
 }
 
 .title-gradient {
@@ -83,8 +88,9 @@ body {
 }
 
 .board-wrap {
+  height: 100%;
   border-radius: 1rem;
-  padding: 0.55rem;
+  padding: 0.7rem;
   background: linear-gradient(145deg, rgba(20, 184, 166, 0.25), rgba(34, 197, 94, 0.16));
 }
 
@@ -117,4 +123,10 @@ canvas {
 .status {
   min-height: 1.4em;
   color: #cbd5e1;
+}
+
+@media (min-width: 992px) {
+  .status {
+    text-align: left;
+  }
 }

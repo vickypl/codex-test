@@ -16,57 +16,65 @@
     <main class="container py-4 py-md-5">
       <section class="game-card card border-0 mx-auto shadow-lg">
         <div class="card-body p-3 p-md-4 p-lg-5">
-          <div class="text-center mb-3">
-            <h1 class="h3 h2-md mb-2 text-uppercase fw-bold title-gradient">Nokia Snake</h1>
-            <p class="subtitle mb-0">
-              Use arrow keys to move. Press <strong>Space</strong> to pause and resume.
-            </p>
-          </div>
+          <div class="game-layout row g-3 g-lg-4 align-items-stretch">
+            <section class="col-12 col-lg-4" aria-label="Game controls and information">
+              <div class="info-panel h-100">
+                <div class="mb-3">
+                  <h1 class="h3 mb-2 text-uppercase fw-bold title-gradient">Nokia Snake</h1>
+                  <p class="subtitle mb-0">
+                    Use arrow keys to move. Press <strong>Space</strong> to pause and resume.
+                  </p>
+                </div>
 
-          <section class="hud row g-2 g-md-3 mb-3" aria-label="Game information">
-            <div class="col-6">
-              <div class="info-pill">
-                <span class="label">Score</span>
-                <span id="score" class="value">0</span>
+                <section class="hud row g-2 mb-3" aria-label="Game information">
+                  <div class="col-6 col-lg-12">
+                    <div class="info-pill">
+                      <span class="label">Score</span>
+                      <span id="score" class="value">0</span>
+                    </div>
+                  </div>
+                  <div class="col-6 col-lg-12">
+                    <div class="info-pill">
+                      <span class="label">High Score</span>
+                      <span id="high-score" class="value">0</span>
+                    </div>
+                  </div>
+                </section>
+
+                <div class="mb-3">
+                  <label class="form-label fw-semibold" for="speed-select">Speed</label>
+                  <select id="speed-select" name="speed" class="form-select form-select-lg">
+                    <option value="slow">Slow</option>
+                    <option value="normal" selected>Normal</option>
+                    <option value="fast">Fast</option>
+                    <option value="turbo">Turbo</option>
+                  </select>
+                </div>
+
+                <div class="d-grid mb-3 mt-auto">
+                  <button id="restart" type="button" class="btn btn-success btn-lg px-4">
+                    Restart
+                  </button>
+                </div>
+
+                <p id="status" class="status mb-0" aria-live="polite">
+                  Press an arrow key to begin.
+                </p>
               </div>
-            </div>
-            <div class="col-6">
-              <div class="info-pill">
-                <span class="label">High Score</span>
-                <span id="high-score" class="value">0</span>
+            </section>
+
+            <section class="col-12 col-lg-8" aria-label="Game board">
+              <div class="board-wrap h-100">
+                <canvas
+                  id="game"
+                  width="400"
+                  height="400"
+                  aria-label="Snake game board"
+                  role="img"
+                ></canvas>
               </div>
-            </div>
-          </section>
-
-          <div class="mb-3">
-            <label class="form-label fw-semibold" for="speed-select">Speed</label>
-            <select id="speed-select" name="speed" class="form-select form-select-lg">
-              <option value="slow">Slow</option>
-              <option value="normal" selected>Normal</option>
-              <option value="fast">Fast</option>
-              <option value="turbo">Turbo</option>
-            </select>
+            </section>
           </div>
-
-          <div class="board-wrap mb-3">
-            <canvas
-              id="game"
-              width="400"
-              height="400"
-              aria-label="Snake game board"
-              role="img"
-            ></canvas>
-          </div>
-
-          <div class="d-grid d-sm-flex justify-content-sm-center gap-2 mb-2">
-            <button id="restart" type="button" class="btn btn-success btn-lg px-4">
-              Restart
-            </button>
-          </div>
-
-          <p id="status" class="status text-center mb-0" aria-live="polite">
-            Press an arrow key to begin.
-          </p>
         </div>
       </section>
     </main>
