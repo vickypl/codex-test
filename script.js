@@ -6,6 +6,7 @@ const highScoreValue = document.getElementById("high-score");
 const statusMessage = document.getElementById("status");
 const restartButton = document.getElementById("restart");
 const speedSelect = document.getElementById("speed-select");
+const levelSelect = document.getElementById("level-select");
 
 const tileCount = 20;
 const tileSize = canvas.width / tileCount;
@@ -17,6 +18,11 @@ const speedOptions = {
   turbo: 65,
 };
 const defaultSpeed = "normal";
+const defaultLevel = "classic";
+
+function isHardLevel() {
+  return levelSelect?.value === "hard";
+}
 
 function getTickSpeed() {
   const selectedSpeed = speedSelect?.value || defaultSpeed;
@@ -192,10 +198,24 @@ function setDirection(newDirection) {
 function update() {
   direction = nextDirection;
 
-  const head = {
-    x: (snake[0].x + direction.x + tileCount) % tileCount,
-    y: (snake[0].y + direction.y + tileCount) % tileCount,
+  const rawHead = {
+    x: snake[0].x + direction.x,
+    y: snake[0].y + direction.y,
   };
+
+  if (isHardLevel() && (rawHead.x < 0 || rawHead.x >= tileCount || rawHead.y < 0 || rawHead.y >= tileCount)) {
+    stopLoop();
+    statusMessage.textContent = "Game over at the wall. Press Restart to play again.";
+    playSound("gameOver");
+    return;
+  }
+
+  const head = isHardLevel()
+    ? rawHead
+    : {
+        x: (rawHead.x + tileCount) % tileCount,
+        y: (rawHead.y + tileCount) % tileCount,
+      };
 
   const hitSelf = snake.some((part) => part.x === head.x && part.y === head.y);
 
@@ -347,6 +367,17 @@ speedSelect?.addEventListener("change", () => {
   statusMessage.textContent = `Speed set to ${selectedLabel}.`;
 });
 
+levelSelect?.addEventListener("change", () => {
+  const selectedLabel = levelSelect.options[levelSelect.selectedIndex].text;
+
+  if (!hasStarted || !gameInterval) {
+    statusMessage.textContent = `Level set to ${selectedLabel}. Press an arrow key to begin.`;
+    return;
+  }
+
+  statusMessage.textContent = `Level set to ${selectedLabel}.`;
+});
+
 restartButton.addEventListener("click", () => {
   playSound("start");
   reset();
@@ -354,6 +385,10 @@ restartButton.addEventListener("click", () => {
 
 if (speedSelect) {
   speedSelect.value = defaultSpeed;
+}
+
+if (levelSelect) {
+  levelSelect.value = defaultLevel;
 }
 
 reset();
