@@ -13,6 +13,7 @@ This project is built with **plain HTML, CSS, and JavaScript only** (no framewor
 - Persistent high score with `localStorage`
 - Restart button for quick replay
 - Selectable speed presets (Slow, Normal, Fast, Turbo)
+- 5 switchable visual themes (snake + board colors)
 
 ## Project Structure
 
@@ -63,6 +64,7 @@ To stop the server, press `Ctrl + C` in the terminal.
 ## How to Play
 
 - Choose a speed preset from the **Speed** dropdown (optional).
+- Pick a preferred look from the **Theme** dropdown (optional).
 - Press any **Arrow key** to start moving.
 - Use **Arrow keys** to change direction.
 - Press **Space** to pause/resume.
