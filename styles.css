@@ -210,6 +210,24 @@ canvas {
   grid-area: down;
 }
 
+
+
+body[data-input-mode="touch"] .touch-controls {
+  position: fixed;
+  left: 50%;
+  bottom: max(0.9rem, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  width: min(92vw, 17rem);
+  padding: 0.45rem;
+  border-radius: 0.9rem;
+  background: rgba(2, 6, 23, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 20;
+}
+
+body[data-input-mode="touch"] main {
+  padding-bottom: 14rem;
+}
 @media (min-width: 992px) {
   .touch-controls {
     display: none;

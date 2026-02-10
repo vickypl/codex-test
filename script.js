@@ -181,6 +181,54 @@ const directionMap = {
   ArrowRight: { x: 1, y: 0 },
 };
 
+const INPUT_MODE = {
+  KEYBOARD: "keyboard",
+  TOUCH: "touch",
+};
+
+function isChromeBrowser() {
+  const ua = navigator.userAgent || "";
+  const vendor = navigator.vendor || "";
+  const hasChromeToken = /(Chrome|CriOS)/.test(ua);
+  const isEdgeOpera = /(Edg|OPR|SamsungBrowser|YaBrowser|UCBrowser|DuckDuckGo)/.test(ua);
+
+  if (!hasChromeToken || isEdgeOpera) {
+    return false;
+  }
+
+  return vendor.includes("Google") || /CriOS/.test(ua);
+}
+
+function isMobilePlatform() {
+  const userAgentDataMobile = navigator.userAgentData?.mobile;
+  if (typeof userAgentDataMobile === "boolean") {
+    return userAgentDataMobile;
+  }
+
+  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || "");
+}
+
+function detectInputMode() {
+  if (!isChromeBrowser()) {
+    return INPUT_MODE.KEYBOARD;
+  }
+
+  return isMobilePlatform() ? INPUT_MODE.TOUCH : INPUT_MODE.KEYBOARD;
+}
+
+const inputMode = detectInputMode();
+document.body.dataset.inputMode = inputMode;
+
+function updateTouchControlVisibility() {
+  if (!touchControls) {
+    return;
+  }
+
+  const enableTouchControls = inputMode === INPUT_MODE.TOUCH;
+  touchControls.hidden = !enableTouchControls;
+  touchControls.setAttribute("aria-hidden", String(!enableTouchControls));
+}
+
 function getTheme() {
   const selectedTheme = themeSelect?.value || defaultTheme;
   return themes[selectedTheme] || themes[defaultTheme];
@@ -362,7 +410,11 @@ function reset() {
   paused = false;
 
   scoreValue.textContent = "0";
-  statusMessage.textContent = `Arena: ${currentArena.label}. Press an arrow key to begin.`;
+  const startHint = inputMode === INPUT_MODE.TOUCH
+    ? "Tap the on-screen arrows to begin."
+    : "Press an arrow key to begin.";
+
+  statusMessage.textContent = `Arena: ${currentArena.label}. ${startHint}`;
 
   stopLoop();
   drawFrame();
@@ -705,6 +757,10 @@ function handleDirectionInput(newDirection) {
 }
 
 window.addEventListener("keydown", (event) => {
+  if (inputMode !== INPUT_MODE.KEYBOARD) {
+    return;
+  }
+
   if (event.code === "Space") {
     event.preventDefault();
     togglePause();
@@ -722,6 +778,10 @@ window.addEventListener("keydown", (event) => {
 
 touchControls?.querySelectorAll("[data-direction]").forEach((button) => {
   button.addEventListener("pointerdown", (event) => {
+    if (inputMode !== INPUT_MODE.TOUCH) {
+      return;
+    }
+
     event.preventDefault();
     const key = button.dataset.direction;
     handleDirectionInput(directionMap[key]);
@@ -729,6 +789,10 @@ touchControls?.querySelectorAll("[data-direction]").forEach((button) => {
 });
 
 pauseButton?.addEventListener("pointerdown", (event) => {
+  if (inputMode !== INPUT_MODE.TOUCH) {
+    return;
+  }
+
   event.preventDefault();
   togglePause();
 });
@@ -738,6 +802,10 @@ let touchStartY = 0;
 const swipeThreshold = 24;
 
 canvas.addEventListener("touchstart", (event) => {
+  if (inputMode !== INPUT_MODE.TOUCH) {
+    return;
+  }
+
   const [touch] = event.changedTouches;
   if (!touch) {
     return;
@@ -748,6 +816,10 @@ canvas.addEventListener("touchstart", (event) => {
 }, { passive: true });
 
 canvas.addEventListener("touchend", (event) => {
+  if (inputMode !== INPUT_MODE.TOUCH) {
+    return;
+  }
+
   const [touch] = event.changedTouches;
   if (!touch) {
     return;
@@ -771,9 +843,12 @@ canvas.addEventListener("touchend", (event) => {
 
 speedSelect?.addEventListener("change", () => {
   const selectedLabel = speedSelect.options[speedSelect.selectedIndex].text;
+  const startHint = inputMode === INPUT_MODE.TOUCH
+    ? "Tap the on-screen arrows to begin."
+    : "Press an arrow key to begin.";
 
   if (!hasStarted || !gameInterval) {
-    statusMessage.textContent = `Speed set to ${selectedLabel}. Press an arrow key to begin.`;
+    statusMessage.textContent = `Speed set to ${selectedLabel}. ${startHint}`;
     return;
   }
 
@@ -783,9 +858,12 @@ speedSelect?.addEventListener("change", () => {
 
 levelSelect?.addEventListener("change", () => {
   const selectedLabel = levelSelect.options[levelSelect.selectedIndex].text;
+  const startHint = inputMode === INPUT_MODE.TOUCH
+    ? "Tap the on-screen arrows to begin."
+    : "Press an arrow key to begin.";
 
   if (!hasStarted || !gameInterval) {
-    statusMessage.textContent = `Level set to ${selectedLabel}. Press an arrow key to begin.`;
+    statusMessage.textContent = `Level set to ${selectedLabel}. ${startHint}`;
     return;
   }
 
@@ -801,9 +879,12 @@ arenaSelect?.addEventListener("change", () => {
 themeSelect?.addEventListener("change", () => {
   activeTheme = getTheme();
   const selectedLabel = themeSelect.options[themeSelect.selectedIndex].text;
+  const startHint = inputMode === INPUT_MODE.TOUCH
+    ? "Tap the on-screen arrows to begin."
+    : "Press an arrow key to begin.";
 
   if (!hasStarted || !gameInterval) {
-    statusMessage.textContent = `Theme set to ${selectedLabel}. Press an arrow key to begin.`;
+    statusMessage.textContent = `Theme set to ${selectedLabel}. ${startHint}`;
   } else {
     statusMessage.textContent = `Theme changed to ${selectedLabel}.`;
   }
@@ -833,5 +914,6 @@ if (arenaSelect) {
 }
 
 activeTheme = getTheme();
+updateTouchControlVisibility();
 
 reset();
