@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Snake icon">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#34d399"/>
+      <stop offset="1" stop-color="#065f46"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="#0f172a"/>
+  <path d="M10 48c0-8 6-14 14-14h8c6 0 10-4 10-10s-4-10-10-10-10 4-10 10" fill="none" stroke="url(#g)" stroke-width="9" stroke-linecap="round"/>
+  <circle cx="23" cy="24" r="7" fill="#22c55e"/>
+  <circle cx="25" cy="22" r="1.4" fill="#052e16"/>
+  <path d="M16 26c2 2 4 2 6 0" fill="none" stroke="#052e16" stroke-width="1.5" stroke-linecap="round"/>
+</svg>
