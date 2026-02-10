@@ -67,7 +67,8 @@ To stop the server, press `Ctrl + C` in the terminal.
 - Use **Arrow keys** to change direction.
 - Press **Space** to pause/resume.
 - Eat food to increase score.
-- Avoid walls and your own body.
+- The snake wraps across screen edges (no wall death).
+- Avoid your own body.
 - Click **Restart** after game over (or anytime) to reset.
 
 ## Game Behavior Details

@@ -193,15 +193,13 @@ function update() {
   direction = nextDirection;
 
   const head = {
-    x: snake[0].x + direction.x,
-    y: snake[0].y + direction.y,
+    x: (snake[0].x + direction.x + tileCount) % tileCount,
+    y: (snake[0].y + direction.y + tileCount) % tileCount,
   };
 
-  const hitWall =
-    head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount;
   const hitSelf = snake.some((part) => part.x === head.x && part.y === head.y);
 
-  if (hitWall || hitSelf) {
+  if (hitSelf) {
     stopLoop();
     statusMessage.textContent = "Game over. Press Restart to play again.";
     playSound("gameOver");
@@ -332,7 +330,7 @@ window.addEventListener("keydown", (event) => {
   if (!hasStarted) {
     hasStarted = true;
     playSound("start");
-    statusMessage.textContent = "Collect the food and avoid walls.";
+    statusMessage.textContent = "Collect the food and avoid yourself.";
     startLoop();
   }
 });
