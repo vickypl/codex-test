@@ -248,10 +248,13 @@ function update() {
 }
 
 function drawGrid() {
-  ctx.fillStyle = "#9bbc0f";
+  const boardGradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+  boardGradient.addColorStop(0, "#9bbc0f");
+  boardGradient.addColorStop(1, "#86a60c");
+  ctx.fillStyle = boardGradient;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  ctx.strokeStyle = "rgba(0, 0, 0, 0.08)";
+  ctx.strokeStyle = "rgba(8, 20, 2, 0.12)";
   for (let i = 0; i <= tileCount; i += 1) {
     const line = i * tileSize;
     ctx.beginPath();
@@ -267,23 +270,115 @@ function drawGrid() {
 }
 
 function drawFood() {
-  ctx.fillStyle = "#223200";
-  ctx.beginPath();
-  ctx.arc(
-    food.x * tileSize + tileSize / 2,
-    food.y * tileSize + tileSize / 2,
-    tileSize * 0.35,
-    0,
-    Math.PI * 2,
+  const centerX = food.x * tileSize + tileSize / 2;
+  const centerY = food.y * tileSize + tileSize / 2;
+
+  const fruitGradient = ctx.createRadialGradient(
+    centerX - tileSize * 0.1,
+    centerY - tileSize * 0.12,
+    tileSize * 0.05,
+    centerX,
+    centerY,
+    tileSize * 0.38,
   );
+  fruitGradient.addColorStop(0, "#d9ff9f");
+  fruitGradient.addColorStop(0.55, "#365111");
+  fruitGradient.addColorStop(1, "#1d2b07");
+
+  ctx.fillStyle = fruitGradient;
+  ctx.beginPath();
+  ctx.arc(centerX, centerY, tileSize * 0.35, 0, Math.PI * 2);
   ctx.fill();
+
+  ctx.strokeStyle = "rgba(12, 28, 4, 0.6)";
+  ctx.lineWidth = 1;
+  ctx.stroke();
 }
 
 function drawSnake() {
   snake.forEach((part, index) => {
-    ctx.fillStyle = index === 0 ? "#0f380f" : "#306230";
-    ctx.fillRect(part.x * tileSize + 1, part.y * tileSize + 1, tileSize - 2, tileSize - 2);
+    const x = part.x * tileSize + tileSize / 2;
+    const y = part.y * tileSize + tileSize / 2;
+
+    const segmentGradient = ctx.createRadialGradient(
+      x - tileSize * 0.15,
+      y - tileSize * 0.18,
+      tileSize * 0.08,
+      x,
+      y,
+      tileSize * 0.55,
+    );
+    segmentGradient.addColorStop(0, index === 0 ? "#9ae6b4" : "#6ee7b7");
+    segmentGradient.addColorStop(0.6, index === 0 ? "#2f855a" : "#276749");
+    segmentGradient.addColorStop(1, "#14532d");
+
+    ctx.fillStyle = segmentGradient;
+    ctx.beginPath();
+    ctx.roundRect(part.x * tileSize + 1.8, part.y * tileSize + 1.8, tileSize - 3.6, tileSize - 3.6, tileSize * 0.25);
+    ctx.fill();
+
+    if (index > 0) {
+      ctx.fillStyle = "rgba(220, 252, 231, 0.3)";
+      ctx.beginPath();
+      ctx.arc(x, y, tileSize * 0.11, 0, Math.PI * 2);
+      ctx.fill();
+    }
   });
+
+  const head = snake[0];
+  const headX = head.x * tileSize;
+  const headY = head.y * tileSize;
+  const centerX = headX + tileSize / 2;
+  const centerY = headY + tileSize / 2;
+
+  const eyeOffsetX = direction.x !== 0 ? direction.x * tileSize * 0.16 : tileSize * 0.14;
+  const eyeOffsetY = direction.y !== 0 ? direction.y * tileSize * 0.16 : tileSize * 0.14;
+
+  const leftEyeX = centerX + eyeOffsetX + (direction.y !== 0 ? -tileSize * 0.15 : 0);
+  const leftEyeY = centerY + eyeOffsetY + (direction.x !== 0 ? -tileSize * 0.15 : 0);
+  const rightEyeX = centerX + eyeOffsetX + (direction.y !== 0 ? tileSize * 0.15 : 0);
+  const rightEyeY = centerY + eyeOffsetY + (direction.x !== 0 ? tileSize * 0.15 : 0);
+
+  ctx.fillStyle = "#ecfeff";
+  ctx.beginPath();
+  ctx.arc(leftEyeX, leftEyeY, tileSize * 0.09, 0, Math.PI * 2);
+  ctx.arc(rightEyeX, rightEyeY, tileSize * 0.09, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = "#052e16";
+  ctx.beginPath();
+  ctx.arc(leftEyeX, leftEyeY, tileSize * 0.05, 0, Math.PI * 2);
+  ctx.arc(rightEyeX, rightEyeY, tileSize * 0.05, 0, Math.PI * 2);
+  ctx.fill();
+
+  const tongueStartX = centerX + direction.x * tileSize * 0.34;
+  const tongueStartY = centerY + direction.y * tileSize * 0.34;
+  const tongueTipX = centerX + direction.x * tileSize * 0.55;
+  const tongueTipY = centerY + direction.y * tileSize * 0.55;
+
+  ctx.strokeStyle = "#fb7185";
+  ctx.lineWidth = 1.4;
+  ctx.beginPath();
+  ctx.moveTo(tongueStartX, tongueStartY);
+  ctx.lineTo(tongueTipX, tongueTipY);
+  ctx.stroke();
+
+  if (direction.x !== 0 || direction.y !== 0) {
+    const forkSpread = tileSize * 0.07;
+    ctx.beginPath();
+    if (direction.x !== 0) {
+      ctx.moveTo(tongueTipX, tongueTipY);
+      ctx.lineTo(tongueTipX, tongueTipY - forkSpread);
+      ctx.moveTo(tongueTipX, tongueTipY);
+      ctx.lineTo(tongueTipX, tongueTipY + forkSpread);
+    } else {
+      ctx.moveTo(tongueTipX, tongueTipY);
+      ctx.lineTo(tongueTipX - forkSpread, tongueTipY);
+      ctx.moveTo(tongueTipX, tongueTipY);
+      ctx.lineTo(tongueTipX + forkSpread, tongueTipY);
+    }
+    ctx.stroke();
+  }
 }
 
 function drawPause() {

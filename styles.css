@@ -1,13 +1,14 @@
 :root {
   color-scheme: dark;
-  --bg-1: #0f172a;
-  --bg-2: #111827;
-  --card-bg: rgba(12, 20, 38, 0.7);
+  --bg-1: #0b1222;
+  --bg-2: #0f172a;
+  --card-bg: rgba(12, 20, 38, 0.72);
   --card-border: rgba(148, 163, 184, 0.22);
   --text-main: #e5e7eb;
   --text-subtle: #9ca3af;
   --accent-1: #22c55e;
   --accent-2: #14b8a6;
+  --panel-shadow: 0 25px 60px rgba(2, 6, 23, 0.55);
 }
 
 * {
@@ -20,8 +21,8 @@ body {
   font-family: Inter, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   color: var(--text-main);
   background:
-    radial-gradient(1200px 700px at 10% 10%, rgba(34, 197, 94, 0.14), transparent 55%),
-    radial-gradient(1200px 700px at 90% 0%, rgba(20, 184, 166, 0.14), transparent 55%),
+    radial-gradient(900px 600px at 8% 8%, rgba(34, 197, 94, 0.18), transparent 60%),
+    radial-gradient(900px 560px at 90% 0%, rgba(20, 184, 166, 0.17), transparent 58%),
     linear-gradient(165deg, var(--bg-1), var(--bg-2));
 }
 
@@ -30,8 +31,9 @@ body {
   border-radius: 1.2rem;
   background: var(--card-bg);
   border: 1px solid var(--card-border);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: var(--panel-shadow);
 }
 
 .info-panel {
@@ -47,19 +49,37 @@ body {
   color: transparent;
 }
 
+.game-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.game-tag {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #d1fae5;
+  border: 1px solid rgba(110, 231, 183, 0.45);
+  padding: 0.22rem 0.52rem;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.15);
+}
+
 .subtitle {
   color: var(--text-subtle);
 }
 
 .info-pill {
   width: 100%;
-  padding: 0.7rem 0.85rem;
+  padding: 0.72rem 0.85rem;
   border-radius: 0.9rem;
-  background: rgba(15, 23, 42, 0.75);
+  background: rgba(15, 23, 42, 0.8);
   border: 1px solid rgba(100, 116, 139, 0.35);
   display: flex;
   flex-direction: column;
   line-height: 1.2;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 .info-pill .label {
@@ -76,7 +96,7 @@ body {
 }
 
 .form-select {
-  background-color: rgba(2, 6, 23, 0.7);
+  background-color: rgba(2, 6, 23, 0.72);
   border-color: rgba(100, 116, 139, 0.65);
   color: var(--text-main);
   border-radius: 0.8rem;
@@ -91,18 +111,22 @@ body {
   height: 100%;
   border-radius: 1rem;
   padding: 0.7rem;
-  background: linear-gradient(145deg, rgba(20, 184, 166, 0.25), rgba(34, 197, 94, 0.16));
+  background:
+    linear-gradient(145deg, rgba(20, 184, 166, 0.28), rgba(34, 197, 94, 0.2)),
+    rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(110, 231, 183, 0.3);
+  box-shadow: inset 0 0 0 1px rgba(16, 185, 129, 0.14);
 }
 
 canvas {
   width: 100%;
   max-width: 100%;
   aspect-ratio: 1;
-  image-rendering: pixelated;
   border: 2px solid rgba(167, 243, 208, 0.7);
   border-radius: 0.75rem;
   background: #9bbc0f;
   display: block;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
 }
 
 .btn-success {
@@ -123,6 +147,10 @@ canvas {
 .status {
   min-height: 1.4em;
   color: #cbd5e1;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid rgba(100, 116, 139, 0.35);
+  border-radius: 0.7rem;
+  background: rgba(15, 23, 42, 0.6);
 }
 
 @media (min-width: 992px) {
