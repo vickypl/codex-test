@@ -14,6 +14,7 @@ This project is built with **plain HTML, CSS, and JavaScript only** (no framewor
 - Restart button for quick replay
 - Selectable speed presets (Slow, Normal, Fast, Turbo)
 - 5 switchable visual themes (snake + board colors)
+- 5 arena layouts with static walls, maze structures, and moving obstacles
 
 ## Project Structure
 
@@ -65,6 +66,7 @@ To stop the server, press `Ctrl + C` in the terminal.
 
 - Choose a speed preset from the **Speed** dropdown (optional).
 - Pick a preferred look from the **Theme** dropdown (optional).
+- Pick an **Arena** layout (Open Field, Crossroads Walls, Spiral Maze, Twin Tunnels, Moving Patrols).
 - Press any **Arrow key** to start moving.
 - Use **Arrow keys** to change direction.
 - Press **Space** to pause/resume.

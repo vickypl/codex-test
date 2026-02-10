@@ -7,6 +7,7 @@ const statusMessage = document.getElementById("status");
 const restartButton = document.getElementById("restart");
 const speedSelect = document.getElementById("speed-select");
 const levelSelect = document.getElementById("level-select");
+const arenaSelect = document.getElementById("arena-select");
 const themeSelect = document.getElementById("theme-select");
 
 const tileCount = 20;
@@ -20,6 +21,82 @@ const speedOptions = {
 };
 const defaultSpeed = "normal";
 const defaultLevel = "classic";
+const defaultArena = "open";
+
+function cellsFromRect(x, y, width, height) {
+  const cells = [];
+  for (let dx = 0; dx < width; dx += 1) {
+    for (let dy = 0; dy < height; dy += 1) {
+      cells.push({ x: x + dx, y: y + dy });
+    }
+  }
+  return cells;
+}
+
+const arenas = {
+  open: {
+    label: "Open Field",
+    walls: [],
+    movingObstacles: [],
+  },
+  crossroads: {
+    label: "Crossroads Walls",
+    walls: [
+      ...cellsFromRect(4, 4, 12, 1),
+      ...cellsFromRect(4, 15, 12, 1),
+      ...cellsFromRect(4, 5, 1, 10),
+      ...cellsFromRect(15, 5, 1, 10),
+      ...cellsFromRect(9, 0, 2, 5),
+      ...cellsFromRect(9, 15, 2, 5),
+    ],
+    movingObstacles: [],
+  },
+  spiral: {
+    label: "Spiral Maze",
+    walls: [
+      ...cellsFromRect(2, 2, 16, 1),
+      ...cellsFromRect(2, 3, 1, 15),
+      ...cellsFromRect(4, 17, 14, 1),
+      ...cellsFromRect(17, 4, 1, 11),
+      ...cellsFromRect(5, 4, 10, 1),
+      ...cellsFromRect(5, 5, 1, 10),
+      ...cellsFromRect(7, 14, 9, 1),
+      ...cellsFromRect(14, 7, 1, 6),
+      ...cellsFromRect(8, 7, 5, 1),
+      ...cellsFromRect(8, 8, 1, 4),
+    ],
+    movingObstacles: [],
+  },
+  tunnels: {
+    label: "Twin Tunnels",
+    walls: [
+      ...cellsFromRect(0, 4, 8, 1),
+      ...cellsFromRect(12, 4, 8, 1),
+      ...cellsFromRect(0, 15, 8, 1),
+      ...cellsFromRect(12, 15, 8, 1),
+      ...cellsFromRect(8, 6, 1, 8),
+      ...cellsFromRect(11, 6, 1, 8),
+      ...cellsFromRect(3, 8, 3, 1),
+      ...cellsFromRect(14, 11, 3, 1),
+    ],
+    movingObstacles: [],
+  },
+  patrol: {
+    label: "Moving Patrols",
+    walls: [
+      ...cellsFromRect(0, 9, 5, 1),
+      ...cellsFromRect(15, 9, 5, 1),
+      ...cellsFromRect(9, 0, 1, 5),
+      ...cellsFromRect(9, 15, 1, 5),
+    ],
+    movingObstacles: [
+      { x: 3, y: 3, axis: "x", min: 3, max: 16, speed: 1, direction: 1 },
+      { x: 16, y: 6, axis: "x", min: 3, max: 16, speed: 1, direction: -1 },
+      { x: 6, y: 16, axis: "y", min: 3, max: 16, speed: 1, direction: -1 },
+      { x: 13, y: 3, axis: "y", min: 3, max: 16, speed: 1, direction: 1 },
+    ],
+  },
+};
 const themes = {
   nokia: {
     boardGradient: ["#9bbc0f", "#86a60c"],
@@ -114,6 +191,9 @@ let direction;
 let nextDirection;
 let food;
 let score;
+let currentArena;
+let staticWallSet;
+let movingObstacles;
 let highScore = Number(localStorage.getItem("snake-high-score") || 0);
 let gameInterval;
 let hasStarted;
@@ -212,22 +292,59 @@ function randomCell() {
   };
 }
 
+function getArena() {
+  const selectedArena = arenaSelect?.value || defaultArena;
+  return arenas[selectedArena] || arenas[defaultArena];
+}
+
+function toCellKey(cell) {
+  return `${cell.x},${cell.y}`;
+}
+
+function buildStaticWallSet(arena) {
+  return new Set(arena.walls.map(toCellKey));
+}
+
+function createMovingObstacles(arena) {
+  return arena.movingObstacles.map((obstacle) => ({ ...obstacle, travelTick: 0 }));
+}
+
+function isBlockedCell(cell) {
+  const key = toCellKey(cell);
+  if (staticWallSet.has(key)) {
+    return true;
+  }
+
+  return movingObstacles.some((obstacle) => obstacle.x === cell.x && obstacle.y === cell.y);
+}
+
 function createFood() {
   let nextFood = randomCell();
+  let guard = tileCount * tileCount * 3;
 
-  while (snake.some((part) => part.x === nextFood.x && part.y === nextFood.y)) {
+  while (guard > 0 && (snake.some((part) => part.x === nextFood.x && part.y === nextFood.y) || isBlockedCell(nextFood))) {
     nextFood = randomCell();
+    guard -= 1;
   }
 
   return nextFood;
 }
 
 function reset() {
+  currentArena = getArena();
+  staticWallSet = buildStaticWallSet(currentArena);
+  movingObstacles = createMovingObstacles(currentArena);
+
   snake = [
     { x: 10, y: 10 },
     { x: 9, y: 10 },
     { x: 8, y: 10 },
   ];
+
+  while (snake.some((part) => isBlockedCell(part))) {
+    snake = snake.map((part) => ({ x: part.x, y: (part.y + 1) % tileCount }));
+  }
+
   direction = { x: 1, y: 0 };
   nextDirection = { ...direction };
   food = createFood();
@@ -236,7 +353,7 @@ function reset() {
   paused = false;
 
   scoreValue.textContent = "0";
-  statusMessage.textContent = "Press an arrow key to begin.";
+  statusMessage.textContent = `Arena: ${currentArena.label}. Press an arrow key to begin.`;
 
   stopLoop();
   drawFrame();
@@ -275,6 +392,25 @@ function setDirection(newDirection) {
   }
 }
 
+function updateMovingObstacles() {
+  movingObstacles.forEach((obstacle) => {
+    obstacle.travelTick += 1;
+    if (obstacle.travelTick < obstacle.speed) {
+      return;
+    }
+
+    obstacle.travelTick = 0;
+    const nextValue = obstacle[obstacle.axis] + obstacle.direction;
+
+    if (nextValue < obstacle.min || nextValue > obstacle.max) {
+      obstacle.direction *= -1;
+      obstacle[obstacle.axis] += obstacle.direction;
+    } else {
+      obstacle[obstacle.axis] = nextValue;
+    }
+  });
+}
+
 function update() {
   direction = nextDirection;
 
@@ -297,6 +433,14 @@ function update() {
         y: (rawHead.y + tileCount) % tileCount,
       };
 
+  const hitWall = staticWallSet.has(toCellKey(head));
+  if (hitWall) {
+    stopLoop();
+    statusMessage.textContent = "Game over. You crashed into a wall.";
+    playSound("gameOver");
+    return;
+  }
+
   const hitSelf = snake.some((part) => part.x === head.x && part.y === head.y);
 
   if (hitSelf) {
@@ -307,6 +451,17 @@ function update() {
   }
 
   snake.unshift(head);
+
+  updateMovingObstacles();
+  const obstacleHit = movingObstacles.some((obstacle) => obstacle.x === head.x && obstacle.y === head.y);
+  const obstacleBodyHit = movingObstacles.some((obstacle) => snake.some((part) => part.x === obstacle.x && part.y === obstacle.y));
+
+  if (obstacleHit || obstacleBodyHit) {
+    stopLoop();
+    statusMessage.textContent = "Game over. A moving obstacle got you.";
+    playSound("gameOver");
+    return;
+  }
 
   if (head.x === food.x && head.y === food.y) {
     score += 10;
@@ -347,6 +502,23 @@ function drawGrid() {
     ctx.lineTo(canvas.width, line);
     ctx.stroke();
   }
+}
+
+function drawArenaObstacles() {
+  ctx.fillStyle = "rgba(2, 6, 23, 0.48)";
+  staticWallSet.forEach((key) => {
+    const [x, y] = key.split(",").map(Number);
+    ctx.fillRect(x * tileSize + 1.5, y * tileSize + 1.5, tileSize - 3, tileSize - 3);
+  });
+
+  movingObstacles.forEach((obstacle) => {
+    const cx = obstacle.x * tileSize + tileSize / 2;
+    const cy = obstacle.y * tileSize + tileSize / 2;
+    ctx.fillStyle = "rgba(239, 68, 68, 0.92)";
+    ctx.beginPath();
+    ctx.arc(cx, cy, tileSize * 0.3, 0, Math.PI * 2);
+    ctx.fill();
+  });
 }
 
 function drawFood() {
@@ -476,6 +648,7 @@ function drawPause() {
 
 function drawFrame() {
   drawGrid();
+  drawArenaObstacles();
   drawFood();
   drawSnake();
   drawPause();
@@ -554,6 +727,12 @@ levelSelect?.addEventListener("change", () => {
 });
 
 
+arenaSelect?.addEventListener("change", () => {
+  const selectedLabel = arenaSelect.options[arenaSelect.selectedIndex].text;
+  statusMessage.textContent = `Arena set to ${selectedLabel}.`;
+  reset();
+});
+
 themeSelect?.addEventListener("change", () => {
   activeTheme = getTheme();
   const selectedLabel = themeSelect.options[themeSelect.selectedIndex].text;
@@ -582,6 +761,10 @@ if (levelSelect) {
 
 if (themeSelect) {
   themeSelect.value = defaultTheme;
+}
+
+if (arenaSelect) {
+  arenaSelect.value = defaultArena;
 }
 
 activeTheme = getTheme();
