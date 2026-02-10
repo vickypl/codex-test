@@ -186,19 +186,6 @@ const INPUT_MODE = {
   TOUCH: "touch",
 };
 
-function isChromeBrowser() {
-  const ua = navigator.userAgent || "";
-  const vendor = navigator.vendor || "";
-  const hasChromeToken = /(Chrome|CriOS)/.test(ua);
-  const isEdgeOpera = /(Edg|OPR|SamsungBrowser|YaBrowser|UCBrowser|DuckDuckGo)/.test(ua);
-
-  if (!hasChromeToken || isEdgeOpera) {
-    return false;
-  }
-
-  return vendor.includes("Google") || /CriOS/.test(ua);
-}
-
 function isMobilePlatform() {
   const userAgentDataMobile = navigator.userAgentData?.mobile;
   if (typeof userAgentDataMobile === "boolean") {
@@ -208,12 +195,20 @@ function isMobilePlatform() {
   return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || "");
 }
 
-function detectInputMode() {
-  if (!isChromeBrowser()) {
-    return INPUT_MODE.KEYBOARD;
+function hasTouchSupport() {
+  if (navigator.maxTouchPoints > 0) {
+    return true;
   }
 
-  return isMobilePlatform() ? INPUT_MODE.TOUCH : INPUT_MODE.KEYBOARD;
+  if (window.matchMedia?.("(pointer: coarse)").matches) {
+    return true;
+  }
+
+  return "ontouchstart" in window;
+}
+
+function detectInputMode() {
+  return isMobilePlatform() || hasTouchSupport() ? INPUT_MODE.TOUCH : INPUT_MODE.KEYBOARD;
 }
 
 const inputMode = detectInputMode();
