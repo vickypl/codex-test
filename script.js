@@ -5,10 +5,23 @@ const scoreValue = document.getElementById("score");
 const highScoreValue = document.getElementById("high-score");
 const statusMessage = document.getElementById("status");
 const restartButton = document.getElementById("restart");
+const speedSelect = document.getElementById("speed-select");
 
 const tileCount = 20;
 const tileSize = canvas.width / tileCount;
-const speed = 120;
+
+const speedOptions = {
+  slow: 180,
+  normal: 120,
+  fast: 90,
+  turbo: 65,
+};
+const defaultSpeed = "normal";
+
+function getTickSpeed() {
+  const selectedSpeed = speedSelect?.value || defaultSpeed;
+  return speedOptions[selectedSpeed] || speedOptions[defaultSpeed];
+}
 
 let snake;
 let direction;
@@ -139,7 +152,7 @@ function reset() {
   scoreValue.textContent = "0";
   statusMessage.textContent = "Press an arrow key to begin.";
 
-  clearInterval(gameInterval);
+  stopLoop();
   drawFrame();
 }
 
@@ -148,12 +161,21 @@ function startLoop() {
     return;
   }
 
-  gameInterval = setInterval(tick, speed);
+  gameInterval = setInterval(tick, getTickSpeed());
 }
 
 function stopLoop() {
   clearInterval(gameInterval);
   gameInterval = undefined;
+}
+
+function refreshLoopSpeed() {
+  if (!gameInterval) {
+    return;
+  }
+
+  stopLoop();
+  startLoop();
 }
 
 function setDirection(newDirection) {
@@ -315,9 +337,25 @@ window.addEventListener("keydown", (event) => {
   }
 });
 
+speedSelect?.addEventListener("change", () => {
+  const selectedLabel = speedSelect.options[speedSelect.selectedIndex].text;
+
+  if (!hasStarted || !gameInterval) {
+    statusMessage.textContent = `Speed set to ${selectedLabel}. Press an arrow key to begin.`;
+    return;
+  }
+
+  refreshLoopSpeed();
+  statusMessage.textContent = `Speed set to ${selectedLabel}.`;
+});
+
 restartButton.addEventListener("click", () => {
   playSound("start");
   reset();
 });
+
+if (speedSelect) {
+  speedSelect.value = defaultSpeed;
+}
 
 reset();

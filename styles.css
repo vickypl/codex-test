@@ -54,6 +54,31 @@ h1 {
   margin: 0;
 }
 
+
+.speed-control {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.6rem;
+  font-weight: 700;
+  color: #b4dcb4;
+}
+
+.speed-control select {
+  border: 1px solid #5cff95;
+  border-radius: 8px;
+  padding: 0.3rem 0.5rem;
+  background: #102514;
+  color: #d4f7d4;
+  font-weight: 700;
+}
+
+.speed-control select:focus-visible {
+  outline: 2px solid #84ffb0;
+  outline-offset: 1px;
+}
+
 canvas {
   width: min(85vw, 400px);
   height: min(85vw, 400px);
