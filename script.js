@@ -19,8 +19,92 @@ let highScore = Number(localStorage.getItem("snake-high-score") || 0);
 let gameInterval;
 let hasStarted;
 let paused;
+let audioContext;
 
 highScoreValue.textContent = String(highScore);
+
+function getAudioContext() {
+  if (!audioContext) {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) {
+      return null;
+    }
+
+    audioContext = new AudioCtx();
+  }
+
+  return audioContext;
+}
+
+function playTone({ frequency, duration = 0.12, type = "square", volume = 0.08, delay = 0 }) {
+  const context = getAudioContext();
+  if (!context) {
+    return;
+  }
+
+  const startAt = context.currentTime + delay;
+  const endAt = startAt + duration;
+
+  const oscillator = context.createOscillator();
+  oscillator.type = type;
+  oscillator.frequency.setValueAtTime(frequency, startAt);
+
+  const gain = context.createGain();
+  gain.gain.setValueAtTime(0, startAt);
+  gain.gain.linearRampToValueAtTime(volume, startAt + 0.01);
+  gain.gain.exponentialRampToValueAtTime(0.0001, endAt);
+
+  oscillator.connect(gain);
+  gain.connect(context.destination);
+
+  oscillator.start(startAt);
+  oscillator.stop(endAt);
+}
+
+function playSound(effect) {
+  const context = getAudioContext();
+  if (!context) {
+    return;
+  }
+
+  if (context.state === "suspended") {
+    context.resume();
+  }
+
+  if (effect === "eat") {
+    playTone({ frequency: 660, duration: 0.08, type: "triangle", volume: 0.06 });
+    playTone({ frequency: 880, duration: 0.09, type: "triangle", volume: 0.06, delay: 0.06 });
+    return;
+  }
+
+  if (effect === "gameOver") {
+    playTone({ frequency: 220, duration: 0.14, type: "sawtooth", volume: 0.09 });
+    playTone({ frequency: 174, duration: 0.16, type: "sawtooth", volume: 0.08, delay: 0.12 });
+    playTone({ frequency: 130, duration: 0.18, type: "sawtooth", volume: 0.08, delay: 0.24 });
+    return;
+  }
+
+  if (effect === "start") {
+    playTone({ frequency: 392, duration: 0.07, type: "square", volume: 0.05 });
+    playTone({ frequency: 523, duration: 0.1, type: "square", volume: 0.06, delay: 0.06 });
+    return;
+  }
+
+  if (effect === "pause") {
+    playTone({ frequency: 294, duration: 0.08, type: "square", volume: 0.05 });
+    return;
+  }
+
+  if (effect === "resume") {
+    playTone({ frequency: 440, duration: 0.08, type: "square", volume: 0.05 });
+    return;
+  }
+
+  if (effect === "newHighScore") {
+    playTone({ frequency: 784, duration: 0.09, type: "triangle", volume: 0.06 });
+    playTone({ frequency: 988, duration: 0.11, type: "triangle", volume: 0.06, delay: 0.08 });
+  }
+}
 
 function randomCell() {
   return {
@@ -98,6 +182,7 @@ function update() {
   if (hitWall || hitSelf) {
     stopLoop();
     statusMessage.textContent = "Game over. Press Restart to play again.";
+    playSound("gameOver");
     return;
   }
 
@@ -106,11 +191,13 @@ function update() {
   if (head.x === food.x && head.y === food.y) {
     score += 10;
     scoreValue.textContent = String(score);
+    playSound("eat");
 
     if (score > highScore) {
       highScore = score;
       highScoreValue.textContent = String(highScore);
       localStorage.setItem("snake-high-score", String(highScore));
+      playSound("newHighScore");
     }
 
     food = createFood();
@@ -205,6 +292,7 @@ window.addEventListener("keydown", (event) => {
     }
 
     paused = !paused;
+    playSound(paused ? "pause" : "resume");
     statusMessage.textContent = paused ? "Paused." : "Back in the game!";
     drawFrame();
     return;
@@ -221,11 +309,15 @@ window.addEventListener("keydown", (event) => {
 
   if (!hasStarted) {
     hasStarted = true;
+    playSound("start");
     statusMessage.textContent = "Collect the food and avoid walls.";
     startLoop();
   }
 });
 
-restartButton.addEventListener("click", reset);
+restartButton.addEventListener("click", () => {
+  playSound("start");
+  reset();
+});
 
 reset();
