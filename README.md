@@ -2,7 +2,7 @@
 
 A lightweight, retro-style Snake game inspired by classic Nokia phones.
 
-This project is built with **plain HTML, CSS, and JavaScript** (no frameworks, no build step). You can run it locally in just a few commands.
+This project is built with **plain HTML, CSS, and JavaScript only** (no frameworks, no build step, no backend).
 
 ## Features
 
@@ -21,16 +21,19 @@ This project is built with **plain HTML, CSS, and JavaScript** (no frameworks, n
 
 ## Requirements
 
-You only need one of the following:
+- Any modern browser (Chrome, Firefox, Edge, Safari)
 
-- Any modern browser (Chrome, Firefox, Edge, Safari), and
-- A simple local HTTP server (recommended)
-
-> You can open `index.html` directly in a browser, but serving through a local HTTP server is the most reliable approach.
+> Optional but helpful: a simple local HTTP server for a smoother local development workflow.
 
 ## How to Run (Step by Step)
 
-### Option 1: Python HTTP server (recommended)
+### Option 1: Open directly in browser (quickest)
+
+1. Go to the project folder.
+2. Double-click `index.html` (or right-click → Open With → Browser).
+3. Start playing.
+
+### Option 2: Python HTTP server (recommended for local serving)
 
 1. Open a terminal.
 2. Go to the project folder:
@@ -49,7 +52,7 @@ You only need one of the following:
 
 To stop the server, press `Ctrl + C` in the terminal.
 
-### Option 2: VS Code Live Server (if you use VS Code)
+### Option 3: VS Code Live Server (optional convenience)
 
 1. Open the folder in VS Code.
 2. Install the **Live Server** extension (if not installed).
@@ -94,9 +97,11 @@ You can tweak visuals in `styles.css`:
     python3 -m http.server 8080
     ```
 - **High score not persisting**:
-  - Make sure your browser allows local storage for localhost pages.
+  - Make sure your browser allows local storage.
 - **Keys not responding**:
   - Click inside the page once, then try arrow keys again.
+- **File won’t open by double-click**:
+  - Try right-clicking `index.html` and choosing your browser manually.
 
 ## License
 
