@@ -127,6 +127,7 @@ canvas {
   background: #9bbc0f;
   display: block;
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
+  touch-action: none;
 }
 
 .btn-success {
@@ -156,5 +157,61 @@ canvas {
 @media (min-width: 992px) {
   .status {
     text-align: left;
+  }
+}
+
+.touch-controls {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(3.4rem, 1fr));
+  grid-template-areas:
+    ". up ."
+    "left pause right"
+    ". down .";
+  gap: 0.5rem;
+  max-width: 14rem;
+  margin-inline: auto;
+}
+
+.touch-btn {
+  border: 1px solid rgba(148, 163, 184, 0.55);
+  border-radius: 0.75rem;
+  background: rgba(15, 23, 42, 0.75);
+  color: #f8fafc;
+  font-weight: 700;
+  font-size: 1.15rem;
+  line-height: 1;
+  min-height: 3.1rem;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+.touch-btn:active {
+  transform: scale(0.97);
+  filter: brightness(1.1);
+}
+
+.touch-up {
+  grid-area: up;
+}
+
+.touch-left {
+  grid-area: left;
+}
+
+.touch-pause {
+  grid-area: pause;
+}
+
+.touch-right {
+  grid-area: right;
+}
+
+.touch-down {
+  grid-area: down;
+}
+
+@media (min-width: 992px) {
+  .touch-controls {
+    display: none;
   }
 }

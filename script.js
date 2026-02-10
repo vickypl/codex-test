@@ -9,6 +9,8 @@ const speedSelect = document.getElementById("speed-select");
 const levelSelect = document.getElementById("level-select");
 const arenaSelect = document.getElementById("arena-select");
 const themeSelect = document.getElementById("theme-select");
+const touchControls = document.getElementById("touch-controls");
+const pauseButton = document.getElementById("touch-pause");
 
 const tileCount = 20;
 const tileSize = canvas.width / tileCount;
@@ -171,6 +173,13 @@ const themes = {
 };
 const defaultTheme = "nokia";
 let activeTheme = themes[defaultTheme];
+
+const directionMap = {
+  ArrowUp: { x: 0, y: -1 },
+  ArrowDown: { x: 0, y: 1 },
+  ArrowLeft: { x: -1, y: 0 },
+  ArrowRight: { x: 1, y: 0 },
+};
 
 function getTheme() {
   const selectedTheme = themeSelect?.value || defaultTheme;
@@ -429,9 +438,9 @@ function update() {
   const head = isHardLevel()
     ? rawHead
     : {
-        x: (rawHead.x + tileCount) % tileCount,
-        y: (rawHead.y + tileCount) % tileCount,
-      };
+      x: (rawHead.x + tileCount) % tileCount,
+      y: (rawHead.y + tileCount) % tileCount,
+    };
 
   const hitWall = staticWallSet.has(toCellKey(head));
   if (hitWall) {
@@ -664,44 +673,101 @@ function tick() {
   drawFrame();
 }
 
-window.addEventListener("keydown", (event) => {
-  const map = {
-    ArrowUp: { x: 0, y: -1 },
-    ArrowDown: { x: 0, y: 1 },
-    ArrowLeft: { x: -1, y: 0 },
-    ArrowRight: { x: 1, y: 0 },
-  };
-
-  if (event.code === "Space") {
-    event.preventDefault();
-
-    if (!hasStarted || !gameInterval) {
-      return;
-    }
-
-    paused = !paused;
-    playSound(paused ? "pause" : "resume");
-    statusMessage.textContent = paused ? "Paused." : "Back in the game!";
-    drawFrame();
+function beginGameIfNeeded() {
+  if (hasStarted) {
     return;
   }
 
-  const newDirection = map[event.key];
+  hasStarted = true;
+  playSound("start");
+  statusMessage.textContent = "Collect the food and avoid yourself.";
+  startLoop();
+}
+
+function togglePause() {
+  if (!hasStarted || !gameInterval) {
+    return;
+  }
+
+  paused = !paused;
+  playSound(paused ? "pause" : "resume");
+  statusMessage.textContent = paused ? "Paused." : "Back in the game!";
+  drawFrame();
+}
+
+function handleDirectionInput(newDirection) {
+  if (!newDirection) {
+    return;
+  }
+
+  setDirection(newDirection);
+  beginGameIfNeeded();
+}
+
+window.addEventListener("keydown", (event) => {
+  if (event.code === "Space") {
+    event.preventDefault();
+    togglePause();
+    return;
+  }
+
+  const newDirection = directionMap[event.key];
   if (!newDirection) {
     return;
   }
 
   event.preventDefault();
-
-  setDirection(newDirection);
-
-  if (!hasStarted) {
-    hasStarted = true;
-    playSound("start");
-    statusMessage.textContent = "Collect the food and avoid yourself.";
-    startLoop();
-  }
+  handleDirectionInput(newDirection);
 });
+
+touchControls?.querySelectorAll("[data-direction]").forEach((button) => {
+  button.addEventListener("pointerdown", (event) => {
+    event.preventDefault();
+    const key = button.dataset.direction;
+    handleDirectionInput(directionMap[key]);
+  });
+});
+
+pauseButton?.addEventListener("pointerdown", (event) => {
+  event.preventDefault();
+  togglePause();
+});
+
+let touchStartX = 0;
+let touchStartY = 0;
+const swipeThreshold = 24;
+
+canvas.addEventListener("touchstart", (event) => {
+  const [touch] = event.changedTouches;
+  if (!touch) {
+    return;
+  }
+
+  touchStartX = touch.clientX;
+  touchStartY = touch.clientY;
+}, { passive: true });
+
+canvas.addEventListener("touchend", (event) => {
+  const [touch] = event.changedTouches;
+  if (!touch) {
+    return;
+  }
+
+  const deltaX = touch.clientX - touchStartX;
+  const deltaY = touch.clientY - touchStartY;
+
+  if (Math.abs(deltaX) < swipeThreshold && Math.abs(deltaY) < swipeThreshold) {
+    return;
+  }
+
+  event.preventDefault();
+
+  if (Math.abs(deltaX) > Math.abs(deltaY)) {
+    handleDirectionInput(deltaX > 0 ? directionMap.ArrowRight : directionMap.ArrowLeft);
+  } else {
+    handleDirectionInput(deltaY > 0 ? directionMap.ArrowDown : directionMap.ArrowUp);
+  }
+}, { passive: false });
 
 speedSelect?.addEventListener("change", () => {
   const selectedLabel = speedSelect.options[speedSelect.selectedIndex].text;
@@ -725,7 +791,6 @@ levelSelect?.addEventListener("change", () => {
 
   statusMessage.textContent = `Level set to ${selectedLabel}.`;
 });
-
 
 arenaSelect?.addEventListener("change", () => {
   const selectedLabel = arenaSelect.options[arenaSelect.selectedIndex].text;
