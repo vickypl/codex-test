@@ -12,6 +12,7 @@ This project is built with **plain HTML, CSS, and JavaScript only** (no framewor
 - Live score tracking
 - Persistent high score with `localStorage`
 - Restart button for quick replay
+- Selectable speed presets (Slow, Normal, Fast, Turbo)
 
 ## Project Structure
 
@@ -61,6 +62,7 @@ To stop the server, press `Ctrl + C` in the terminal.
 
 ## How to Play
 
+- Choose a speed preset from the **Speed** dropdown (optional).
 - Press any **Arrow key** to start moving.
 - Use **Arrow keys** to change direction.
 - Press **Space** to pause/resume.
@@ -81,7 +83,7 @@ To stop the server, press `Ctrl + C` in the terminal.
 You can quickly tweak gameplay by editing constants in `script.js`:
 
 - `tileCount` → board dimensions
-- `speed` → tick speed in milliseconds (lower = faster)
+- Speed presets live in `speedOptions` (values are tick milliseconds; lower = faster)
 
 You can tweak visuals in `styles.css`:
 

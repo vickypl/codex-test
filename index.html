@@ -14,6 +14,15 @@
         <p>Score: <span id="score">0</span></p>
         <p>High Score: <span id="high-score">0</span></p>
       </section>
+      <label class="speed-control" for="speed-select">
+        Speed:
+        <select id="speed-select" name="speed">
+          <option value="slow">Slow</option>
+          <option value="normal" selected>Normal</option>
+          <option value="fast">Fast</option>
+          <option value="turbo">Turbo</option>
+        </select>
+      </label>
       <canvas id="game" width="400" height="400" aria-label="Snake game board" role="img"></canvas>
       <button id="restart" type="button">Restart</button>
       <p id="status" class="status" aria-live="polite">Press an arrow key to begin.</p>
