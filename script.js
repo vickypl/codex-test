@@ -7,6 +7,7 @@ const statusMessage = document.getElementById("status");
 const restartButton = document.getElementById("restart");
 const speedSelect = document.getElementById("speed-select");
 const levelSelect = document.getElementById("level-select");
+const themeSelect = document.getElementById("theme-select");
 
 const tileCount = 20;
 const tileSize = canvas.width / tileCount;
@@ -19,6 +20,85 @@ const speedOptions = {
 };
 const defaultSpeed = "normal";
 const defaultLevel = "classic";
+const themes = {
+  nokia: {
+    boardGradient: ["#9bbc0f", "#86a60c"],
+    gridLine: "rgba(8, 20, 2, 0.12)",
+    fruitGradient: ["#d9ff9f", "#365111", "#1d2b07"],
+    fruitStroke: "rgba(12, 28, 4, 0.6)",
+    snakeHead: ["#9ae6b4", "#2f855a", "#14532d"],
+    snakeBody: ["#6ee7b7", "#276749", "#14532d"],
+    snakeSpot: "rgba(220, 252, 231, 0.3)",
+    eyeWhite: "#ecfeff",
+    eyePupil: "#052e16",
+    tongue: "#fb7185",
+    pauseOverlay: "rgba(0, 0, 0, 0.4)",
+    pauseText: "#d4f7d4",
+  },
+  sunset: {
+    boardGradient: ["#f97316", "#be123c"],
+    gridLine: "rgba(86, 11, 45, 0.25)",
+    fruitGradient: ["#fde68a", "#f97316", "#b91c1c"],
+    fruitStroke: "rgba(98, 9, 30, 0.6)",
+    snakeHead: ["#fef08a", "#f59e0b", "#b45309"],
+    snakeBody: ["#fdba74", "#ea580c", "#9a3412"],
+    snakeSpot: "rgba(255, 237, 213, 0.4)",
+    eyeWhite: "#fff7ed",
+    eyePupil: "#7c2d12",
+    tongue: "#f43f5e",
+    pauseOverlay: "rgba(54, 3, 18, 0.48)",
+    pauseText: "#ffe4e6",
+  },
+  ocean: {
+    boardGradient: ["#38bdf8", "#0f766e"],
+    gridLine: "rgba(7, 56, 67, 0.22)",
+    fruitGradient: ["#dbeafe", "#60a5fa", "#1d4ed8"],
+    fruitStroke: "rgba(12, 36, 108, 0.6)",
+    snakeHead: ["#ccfbf1", "#0d9488", "#115e59"],
+    snakeBody: ["#99f6e4", "#0f766e", "#134e4a"],
+    snakeSpot: "rgba(240, 253, 250, 0.35)",
+    eyeWhite: "#ecfeff",
+    eyePupil: "#083344",
+    tongue: "#f472b6",
+    pauseOverlay: "rgba(3, 37, 65, 0.45)",
+    pauseText: "#cffafe",
+  },
+  arctic: {
+    boardGradient: ["#f8fafc", "#cbd5e1"],
+    gridLine: "rgba(30, 41, 59, 0.16)",
+    fruitGradient: ["#fee2e2", "#fda4af", "#be123c"],
+    fruitStroke: "rgba(127, 29, 29, 0.55)",
+    snakeHead: ["#dbeafe", "#3b82f6", "#1e40af"],
+    snakeBody: ["#bfdbfe", "#2563eb", "#1d4ed8"],
+    snakeSpot: "rgba(239, 246, 255, 0.65)",
+    eyeWhite: "#f8fafc",
+    eyePupil: "#0f172a",
+    tongue: "#e11d48",
+    pauseOverlay: "rgba(15, 23, 42, 0.38)",
+    pauseText: "#e2e8f0",
+  },
+  midnight: {
+    boardGradient: ["#1e1b4b", "#020617"],
+    gridLine: "rgba(45, 212, 191, 0.2)",
+    fruitGradient: ["#f5d0fe", "#c026d3", "#701a75"],
+    fruitStroke: "rgba(88, 28, 135, 0.6)",
+    snakeHead: ["#86efac", "#22d3ee", "#0f766e"],
+    snakeBody: ["#67e8f9", "#0ea5e9", "#155e75"],
+    snakeSpot: "rgba(165, 243, 252, 0.3)",
+    eyeWhite: "#f0fdfa",
+    eyePupil: "#0f172a",
+    tongue: "#f9a8d4",
+    pauseOverlay: "rgba(2, 6, 23, 0.52)",
+    pauseText: "#ccfbf1",
+  },
+};
+const defaultTheme = "nokia";
+let activeTheme = themes[defaultTheme];
+
+function getTheme() {
+  const selectedTheme = themeSelect?.value || defaultTheme;
+  return themes[selectedTheme] || themes[defaultTheme];
+}
 
 function isHardLevel() {
   return levelSelect?.value === "hard";
@@ -249,12 +329,12 @@ function update() {
 
 function drawGrid() {
   const boardGradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-  boardGradient.addColorStop(0, "#9bbc0f");
-  boardGradient.addColorStop(1, "#86a60c");
+  boardGradient.addColorStop(0, activeTheme.boardGradient[0]);
+  boardGradient.addColorStop(1, activeTheme.boardGradient[1]);
   ctx.fillStyle = boardGradient;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  ctx.strokeStyle = "rgba(8, 20, 2, 0.12)";
+  ctx.strokeStyle = activeTheme.gridLine;
   for (let i = 0; i <= tileCount; i += 1) {
     const line = i * tileSize;
     ctx.beginPath();
@@ -281,16 +361,16 @@ function drawFood() {
     centerY,
     tileSize * 0.38,
   );
-  fruitGradient.addColorStop(0, "#d9ff9f");
-  fruitGradient.addColorStop(0.55, "#365111");
-  fruitGradient.addColorStop(1, "#1d2b07");
+  fruitGradient.addColorStop(0, activeTheme.fruitGradient[0]);
+  fruitGradient.addColorStop(0.55, activeTheme.fruitGradient[1]);
+  fruitGradient.addColorStop(1, activeTheme.fruitGradient[2]);
 
   ctx.fillStyle = fruitGradient;
   ctx.beginPath();
   ctx.arc(centerX, centerY, tileSize * 0.35, 0, Math.PI * 2);
   ctx.fill();
 
-  ctx.strokeStyle = "rgba(12, 28, 4, 0.6)";
+  ctx.strokeStyle = activeTheme.fruitStroke;
   ctx.lineWidth = 1;
   ctx.stroke();
 }
@@ -308,9 +388,9 @@ function drawSnake() {
       y,
       tileSize * 0.55,
     );
-    segmentGradient.addColorStop(0, index === 0 ? "#9ae6b4" : "#6ee7b7");
-    segmentGradient.addColorStop(0.6, index === 0 ? "#2f855a" : "#276749");
-    segmentGradient.addColorStop(1, "#14532d");
+    segmentGradient.addColorStop(0, index === 0 ? activeTheme.snakeHead[0] : activeTheme.snakeBody[0]);
+    segmentGradient.addColorStop(0.6, index === 0 ? activeTheme.snakeHead[1] : activeTheme.snakeBody[1]);
+    segmentGradient.addColorStop(1, index === 0 ? activeTheme.snakeHead[2] : activeTheme.snakeBody[2]);
 
     ctx.fillStyle = segmentGradient;
     ctx.beginPath();
@@ -318,7 +398,7 @@ function drawSnake() {
     ctx.fill();
 
     if (index > 0) {
-      ctx.fillStyle = "rgba(220, 252, 231, 0.3)";
+      ctx.fillStyle = activeTheme.snakeSpot;
       ctx.beginPath();
       ctx.arc(x, y, tileSize * 0.11, 0, Math.PI * 2);
       ctx.fill();
@@ -339,13 +419,13 @@ function drawSnake() {
   const rightEyeX = centerX + eyeOffsetX + (direction.y !== 0 ? tileSize * 0.15 : 0);
   const rightEyeY = centerY + eyeOffsetY + (direction.x !== 0 ? tileSize * 0.15 : 0);
 
-  ctx.fillStyle = "#ecfeff";
+  ctx.fillStyle = activeTheme.eyeWhite;
   ctx.beginPath();
   ctx.arc(leftEyeX, leftEyeY, tileSize * 0.09, 0, Math.PI * 2);
   ctx.arc(rightEyeX, rightEyeY, tileSize * 0.09, 0, Math.PI * 2);
   ctx.fill();
 
-  ctx.fillStyle = "#052e16";
+  ctx.fillStyle = activeTheme.eyePupil;
   ctx.beginPath();
   ctx.arc(leftEyeX, leftEyeY, tileSize * 0.05, 0, Math.PI * 2);
   ctx.arc(rightEyeX, rightEyeY, tileSize * 0.05, 0, Math.PI * 2);
@@ -356,7 +436,7 @@ function drawSnake() {
   const tongueTipX = centerX + direction.x * tileSize * 0.55;
   const tongueTipY = centerY + direction.y * tileSize * 0.55;
 
-  ctx.strokeStyle = "#fb7185";
+  ctx.strokeStyle = activeTheme.tongue;
   ctx.lineWidth = 1.4;
   ctx.beginPath();
   ctx.moveTo(tongueStartX, tongueStartY);
@@ -386,9 +466,9 @@ function drawPause() {
     return;
   }
 
-  ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
+  ctx.fillStyle = activeTheme.pauseOverlay;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = "#d4f7d4";
+  ctx.fillStyle = activeTheme.pauseText;
   ctx.font = "bold 32px Trebuchet MS";
   ctx.textAlign = "center";
   ctx.fillText("PAUSED", canvas.width / 2, canvas.height / 2 + 10);
@@ -473,6 +553,20 @@ levelSelect?.addEventListener("change", () => {
   statusMessage.textContent = `Level set to ${selectedLabel}.`;
 });
 
+
+themeSelect?.addEventListener("change", () => {
+  activeTheme = getTheme();
+  const selectedLabel = themeSelect.options[themeSelect.selectedIndex].text;
+
+  if (!hasStarted || !gameInterval) {
+    statusMessage.textContent = `Theme set to ${selectedLabel}. Press an arrow key to begin.`;
+  } else {
+    statusMessage.textContent = `Theme changed to ${selectedLabel}.`;
+  }
+
+  drawFrame();
+});
+
 restartButton.addEventListener("click", () => {
   playSound("start");
   reset();
@@ -485,5 +579,11 @@ if (speedSelect) {
 if (levelSelect) {
   levelSelect.value = defaultLevel;
 }
+
+if (themeSelect) {
+  themeSelect.value = defaultTheme;
+}
+
+activeTheme = getTheme();
 
 reset();
